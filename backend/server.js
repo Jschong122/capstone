@@ -5,6 +5,8 @@ import dbConnect from "./database/dbConnect.js";
 import { doctorRouter } from "./routes/doctor.route.js";
 import { patientRouter } from "./routes/patient.route.js";
 import { appointmentRouter } from "./routes/appointment.route.js";
+import { usersRouter } from "./routes/users.route.js";
+import patientOrDoctor from "./controllers/patientOrDoctor.js";
 
 dotenv.config();
 
@@ -18,6 +20,7 @@ app.use(express.json());
 dbConnect();
 
 // Routes
+app.use("/users", patientOrDoctor, usersRouter);
 app.use("/doctors", doctorRouter);
 app.use("/patients", patientRouter);
 app.use("/appointments", appointmentRouter);
@@ -31,3 +34,5 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`"http://localhost:${PORT}"`);
 });
+
+export { app };

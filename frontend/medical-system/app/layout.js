@@ -1,5 +1,8 @@
 import { Comfortaa } from "next/font/google";
 import "./globals.css";
+import SideBar from "./components/SideBar";
+
+import Footer from "./components/Footer";
 
 const comfortaa = Comfortaa({ subsets: ["latin"] });
 
@@ -11,7 +14,12 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={comfortaa.className}>{children}</body>
+      <body className={`${comfortaa.className} bg-gray-100 w-full h-full`}>
+        <SideBar />
+
+        {children}
+        <Footer />
+      </body>
     </html>
   );
 }
