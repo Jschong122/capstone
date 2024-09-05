@@ -4,18 +4,22 @@
 
 h1 {
   font-size: 2rem;
+  font-weight: bold;
 }
 
 h2 {
   font-size: 1.5rem;
+  font-weight: bold;
 }
 
 h3 {
   font-size: 1.17rem;
+  font-weight: bold;
 }
 
 h4 {
   font-size: 1rem;
+  font-weight: bold;
 }
 
 h5 {
@@ -24,4 +28,36 @@ h5 {
 
 h6 {
   font-size: 0.67rem;
+}
+.intro-section {
+  background-color: #c8d9cf;
+  border-radius: 20px;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  margin: 2rem 4rem;
+}
+
+@layer base {
+  .bg-disabled {
+    background-color: #e9efec;
+  }
+}
+
+button {
+  @apply bg-dark-green;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  @apply bg-light-green;
+  color: white;
+}
+
+button:disabled {
+  @apply bg-disabled;
+  color: rgb(7, 7, 7);
 }
