@@ -71,7 +71,11 @@ router.post("/login", patientOrDoctorLogin, async (req, res) => {
     }
     res.json({
       message: "login success",
-      user: { id: user._id, email: user.email, role: user.role },
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+      },
     });
   } catch (error) {
     console.error("login failed:", error);
