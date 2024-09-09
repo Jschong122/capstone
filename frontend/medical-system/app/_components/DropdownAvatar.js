@@ -9,6 +9,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown, UserPen } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { signOut } from "next-auth/react";
+
 const DropdownAvatar = (data) => {
   const session = data.data;
   const router = useRouter();
@@ -38,7 +40,9 @@ const DropdownAvatar = (data) => {
             My Medical Records
           </DropdownMenuItem>
           <DropdownMenuItem
-            onClick={() => signOut()}
+            onClick={() => {
+              signOut({ callbackUrl: "/" });
+            }}
             className="text-red-500 font-bold cursor-pointer hover:bg-red-500 hover:text-white"
           >
             Logout
