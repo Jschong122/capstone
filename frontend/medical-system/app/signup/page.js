@@ -35,6 +35,7 @@ const SignUp = () => {
         role,
       });
       console.log(response.data);
+      alert("Signup successful");
       router.push("/login");
     } catch (error) {
       if (error.response.status === 400) {

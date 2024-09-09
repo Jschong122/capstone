@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 
-const SideBar = () => {
+const NavBar = () => {
   return (
     <div>
       <nav className="bg-dark-green flex p-5 justify-between">
@@ -39,4 +39,4 @@ const SideBar = () => {
   );
 };
 
-export default SideBar;
+export default NavBar;

@@ -2,18 +2,22 @@ import { Router } from "express";
 import bcrypt from "bcrypt";
 import PatientModel from "../models/patient.model.js";
 import DoctorModel from "../models/doctor.model.js";
+import {
+  patientOrDoctorSignup,
+  patientOrDoctorLogin,
+} from "../controllers/patientOrDoctor.js";
 
 const router = Router();
 
-router.post("/signup", async (req, res) => {
+router.post("/signup", patientOrDoctorSignup, async (req, res) => {
   try {
     const { password, name } = req.body;
-    const { email, role } = req.newUser;
+    const { email, role } = req.newUser || {};
 
-    if (!email || !role || !password) {
+    if (!email || !role || !password || !name) {
       return res
         .status(400)
-        .json({ message: "Missing email, role or password" });
+        .json({ message: "missing email, role, password or name" });
     }
 
     // bycrypt password
@@ -25,15 +29,15 @@ router.post("/signup", async (req, res) => {
     // choose different model based on role
     if (role === "patient") {
       createUser = new PatientModel({
-        name,
         email,
         password: hashedPassword,
+        name,
       });
     } else if (role === "doctor") {
       createUser = new DoctorModel({
-        name,
         email,
         password: hashedPassword,
+        name,
       });
     } else {
       return res.status(400).json({ message: "Invalid user role" });
@@ -51,19 +55,28 @@ router.post("/signup", async (req, res) => {
   }
 });
 
-router.post("/login", async (req, res) => {
+router.post("/login", patientOrDoctorLogin, async (req, res) => {
   const { password } = req.body;
-  const user = req.user;
 
-  const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) {
-    return res.status(401).json({ message: "password is not valid" });
+  if (!req.oldUser) {
+    return res.status(400).json({ message: "user not found" });
   }
 
-  res.json({
-    message: "login success",
-    user: { id: user._id, email: user.email, role: user.role },
-  });
+  const user = req.oldUser;
+
+  try {
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ message: "password is not valid" });
+    }
+    res.json({
+      message: "login success",
+      user: { id: user._id, email: user.email, role: user.role },
+    });
+  } catch (error) {
+    console.error("login failed:", error);
+    res.status(500).json({ message: "login failed, server error" });
+  }
 });
 
 export { router as usersRouter };

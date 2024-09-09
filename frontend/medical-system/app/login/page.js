@@ -13,12 +13,29 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+
 export function LogIn() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    try {
+      const response = await axios.post("http://localhost:5000/users/login", {
+        email,
+        password,
+      });
+      console.log(email, password);
+      console.log(response.data);
+      alert("Login successful");
+      router.push("/");
+    } catch (error) {
+      console.log(error);
+      alert("Login failed. Please check your email and password.");
+    }
   };
 
   return (
@@ -30,7 +47,7 @@ export function LogIn() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit}>
+          <form>
             <div className="grid w-full items-center gap-4">
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="email">email</Label>
@@ -72,7 +89,7 @@ export function LogIn() {
               Login
             </Button>
           ) : (
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full" onClick={handleSubmit}>
               Login
             </Button>
           )}
