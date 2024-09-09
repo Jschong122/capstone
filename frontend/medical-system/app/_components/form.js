@@ -10,13 +10,13 @@ const Form = ({}) => {
   const handleSubmit = () => {
     console.log(doctor, date, message);
 
-    // axios.post("/api/book-appointment", {
-    //   patientId: "session.user.id",
-    //   patientName: "session.user.name",
-    //   doctor,
-    //   date,
-    //   message,
-    // });
+    axios.post("http://localhost:5000/appointments/create", {
+      patientId: "session.user.id",
+      patientName: "session.user.name",
+      doctor,
+      date,
+      message,
+    });
 
     console.log("Form submitted");
   };

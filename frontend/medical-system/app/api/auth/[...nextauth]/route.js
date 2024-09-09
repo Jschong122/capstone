@@ -1,6 +1,7 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import axios from "axios";
+import SignUp from "@/app/signup/page";
 
 export const authOptions = {
   providers: [
@@ -24,10 +25,8 @@ export const authOptions = {
           );
 
           // if the user's credentials are valid, then return the user's information
-          if (response.status === 201) {
-            console.log("Authentication successful:", response.status);
-            return response.data.user;
-          } else if (response.status === 200) {
+
+          if (response.status === 200) {
             console.log("Authentication successful:", response.status);
             return response.data.user;
           } else {
@@ -59,12 +58,15 @@ export const authOptions = {
       session.user.role = token.role;
       session.user.email = token.email;
       session.user.name = token.name;
+
       return session;
     },
   },
   pages: {
     signIn: "/login",
+    signUp: "/signup",
   },
 };
 
-export default NextAuth(authOptions);
+const handler = NextAuth(authOptions);
+export { handler as GET, handler as POST };

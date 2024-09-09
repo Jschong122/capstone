@@ -16,14 +16,14 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.post("/", async (req, res) => {
+router.post("/create", async (req, res) => {
   try {
-    const { patientId, doctorId, date, time } = req.body;
+    const { patientId, doctorId, date, message } = req.body;
     const appointment = await AppointmentModel.create({
       patientId,
       doctorId,
       date,
-      time,
+      message,
     });
     res.status(201).json(appointment);
   } catch (error) {

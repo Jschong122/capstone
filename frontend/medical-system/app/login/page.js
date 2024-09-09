@@ -13,9 +13,9 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import axios from "axios";
-import { useRouter } from "next/navigation";
 
+import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 export function LogIn() {
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -24,17 +24,21 @@ export function LogIn() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:5000/users/login", {
+      const response = await signIn("credentials", {
         email,
         password,
+        redirect: false,
       });
-      console.log(email, password);
-      console.log(response.data);
-      alert("Login successful");
+
+      if (response.error) {
+        throw new Error(response.error);
+      }
+
+      console.log("login successful");
       router.push("/");
     } catch (error) {
-      console.log(error);
-      alert("Login failed. Please check your email and password.");
+      console.error("login failed:", error);
+      alert("login failed. Please check your email and password.");
     }
   };
 
