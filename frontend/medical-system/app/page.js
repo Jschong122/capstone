@@ -1,19 +1,26 @@
-import DoctorPanel from "./_components/AfterLogin/DoctorPanel";
-import PatientPanel from "./_components/AfterLogin/PatientPanel";
-import Section from "./_components/Section";
+"use client";
+
 import Intro from "./_components/Intro";
+import { useSession } from "next-auth/react";
+import { DoctorSection } from "./_components/Section";
+
 export default function Home() {
-  return (
-    <div>
+  const { data: session } = useSession();
+
+  if (session?.user.role === "doctor") {
+    return (
       <div>
-        <h1>Welcome to the Medical System</h1>
+        <DoctorSection />
       </div>
+    );
+  }
 
-      {/* hero section */}
-      <Section />
-
-      {/* intro */}
-      <Intro />
-    </div>
-  );
+  if (session?.user.role === "patient") {
+    return (
+      <div>
+        <PatientSection />
+        <Intro />
+      </div>
+    );
+  }
 }
