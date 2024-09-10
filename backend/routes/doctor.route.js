@@ -4,9 +4,21 @@ import DoctorModel from "../models/doctor.model.js";
 const router = Router();
 
 router.get("/", async (req, res) => {
-  const doctors = await DoctorModel.find();
-  res.json(doctors);
-  res.status(404).json({ message: "No doctors found" });
+  try {
+    const doctors = await DoctorModel.find({}, "name email specialty");
+    const doctorsWithRole = doctors.map((doctor) => ({
+      ...doctor.toObject(),
+
+      role: "Doctor",
+    }));
+
+    return res.json(doctorsWithRole);
+  } catch (error) {
+    console.error("Fetch doctors list failed:", error);
+    return res
+      .status(500)
+      .json({ message: "Server error when fetching doctors" });
+  }
 });
 
 router.post("/", async (req, res) => {

@@ -11,14 +11,15 @@ const router = Router();
 
 router.post("/signup", patientOrDoctorSignup, async (req, res) => {
   try {
-    const { password, name } = req.body;
-    const { email, role } = req.newUser || {};
-
-    if (!email || !role || !password || !name) {
-      return res
-        .status(400)
-        .json({ message: "missing email, role, password or name" });
+    if (req.oldUser) {
+      return res.status(400).json({ message: "user already exists" });
     }
+    if (req.newUser) {
+      console.log("creating a new user:", req.newUser);
+    }
+
+    const { password, name, specialty } = req.body;
+    const { email, role } = req.newUser;
 
     // bycrypt password
     const salt = await bcrypt.genSalt(10);
@@ -31,6 +32,7 @@ router.post("/signup", patientOrDoctorSignup, async (req, res) => {
       createUser = new PatientModel({
         email,
         password: hashedPassword,
+        role: "patient",
         name,
       });
     } else if (role === "doctor") {
@@ -38,6 +40,8 @@ router.post("/signup", patientOrDoctorSignup, async (req, res) => {
         email,
         password: hashedPassword,
         name,
+        role: "doctor",
+        specialty,
       });
     } else {
       return res.status(400).json({ message: "Invalid user role" });
@@ -45,9 +49,14 @@ router.post("/signup", patientOrDoctorSignup, async (req, res) => {
 
     await createUser.save();
 
-    res.json({
+    res.status(201).json({
       message: "Signup success",
-      user: { id: createUser._id, email: createUser.email, role },
+      user: {
+        id: createUser._id,
+        email: createUser.email,
+        role: createUser.role,
+        name: createUser.name,
+      },
     });
   } catch (error) {
     console.error("signup failed:", error);
@@ -58,11 +67,8 @@ router.post("/signup", patientOrDoctorSignup, async (req, res) => {
 router.post("/login", patientOrDoctorLogin, async (req, res) => {
   const { password } = req.body;
 
-  if (!req.oldUser) {
-    return res.status(400).json({ message: "user not found" });
-  }
-
   const user = req.oldUser;
+  console.log("oldUser:", user);
 
   try {
     const isMatch = await bcrypt.compare(password, user.password);
@@ -75,6 +81,8 @@ router.post("/login", patientOrDoctorLogin, async (req, res) => {
         id: user._id,
         name: user.name,
         email: user.email,
+        role: user.role,
+        specialty: user.specialty,
       },
     });
   } catch (error) {

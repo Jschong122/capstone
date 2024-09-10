@@ -13,7 +13,9 @@ const doctorSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  specialty: String,
+  specialty: {
+    type: String,
+  },
   profileImageUrl: String,
 });
 
