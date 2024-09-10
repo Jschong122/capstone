@@ -10,7 +10,7 @@ const BookAppointment = () => {
 
   console.log(session?.user, "in book appointment page");
 
-  if (session?.user.role === "Doctor") {
+  if (session?.user.role === "doctor") {
     return <div>You are not authorized to access this page</div>;
   }
 
