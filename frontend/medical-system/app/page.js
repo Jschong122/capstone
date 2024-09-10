@@ -2,7 +2,7 @@
 
 import Intro from "./_components/Intro";
 import { useSession } from "next-auth/react";
-import { DoctorSection, PatientSection } from "./_components/Section";
+import { PatientSection, DoctorSection } from "./_components/Section";
 
 export default function Home() {
   const { data: session } = useSession();
@@ -23,4 +23,16 @@ export default function Home() {
       </div>
     );
   }
+
+  return (
+    <div>
+      <div className="flex flex-col items-center justify-center h-[30vh]">
+        <h1> You are not logged in! </h1>
+        <h3> please log in to access the page </h3>
+        <h3> if you don't have an account, please sign up </h3>
+      </div>
+
+      <Intro />
+    </div>
+  );
 }
