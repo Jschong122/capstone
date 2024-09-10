@@ -2,7 +2,7 @@ import PatientModel from "../models/patient.model.js";
 import DoctorModel from "../models/doctor.model.js";
 
 const patientOrDoctorSignup = async (req, res, next) => {
-  console.log("Received  request", req.body);
+  console.log("Received signup request", req.body);
   const { email, role, password } = req.body;
 
   if (!email || !role || !password) {
@@ -14,11 +14,9 @@ const patientOrDoctorSignup = async (req, res, next) => {
     const doctorExists = await DoctorModel.findOne({ email });
 
     if (patientExists || doctorExists) {
-      // 用户存在，将用户信息传递给下一个中间件
       req.oldUser = patientExists || doctorExists;
       console.log("old user found:", req.oldUser);
-    } else if (!patientExists && !doctorExists) {
-      // 用户不存在，准备创建新用户
+    } else {
       req.newUser = { email, role, password };
       console.log("new user:", req.newUser);
     }
@@ -30,8 +28,11 @@ const patientOrDoctorSignup = async (req, res, next) => {
   }
 };
 
+// login
+
 const patientOrDoctorLogin = async (req, res, next) => {
   console.log("Received login request", req.body);
+
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -42,9 +43,22 @@ const patientOrDoctorLogin = async (req, res, next) => {
     const patientExists = await PatientModel.findOne({ email });
     const doctorExists = await DoctorModel.findOne({ email });
 
+    if (!patientExists && !doctorExists) {
+      console.log("user not found");
+      return res.status(400).json({ message: "user not found" });
+    }
+
     if (patientExists || doctorExists) {
       req.oldUser = patientExists || doctorExists;
-      console.log("old user found:", req.oldUser);
+      console.log("user found:", req.oldUser);
+
+      // set the role of the user in req.oldUser
+      if (patientExists) {
+        req.oldUser.role = "patient";
+      } else if (doctorExists) {
+        req.oldUser.role = "doctor";
+      }
+
       next();
     } else {
       return res.status(400).json({ message: "user not found" });
