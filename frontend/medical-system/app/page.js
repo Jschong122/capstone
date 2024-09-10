@@ -2,7 +2,7 @@
 
 import Intro from "./_components/Intro";
 import { useSession } from "next-auth/react";
-import { DoctorSection } from "./_components/Section";
+import { DoctorSection, PatientSection } from "./_components/Section";
 
 export default function Home() {
   const { data: session } = useSession();
