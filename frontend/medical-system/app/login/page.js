@@ -13,12 +13,33 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+
+import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 export function LogIn() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    try {
+      const response = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+
+      if (response.error) {
+        throw new Error(response.error);
+      }
+
+      console.log("login successful");
+      router.push("/");
+    } catch (error) {
+      console.error("login failed:", error);
+      alert("login failed. Please check your email and password.");
+    }
   };
 
   return (
@@ -30,7 +51,7 @@ export function LogIn() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit}>
+          <form>
             <div className="grid w-full items-center gap-4">
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="email">email</Label>
@@ -72,7 +93,7 @@ export function LogIn() {
               Login
             </Button>
           ) : (
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full" onClick={handleSubmit}>
               Login
             </Button>
           )}

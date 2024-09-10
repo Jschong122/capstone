@@ -20,7 +20,7 @@ const SignUp = () => {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("");
-  const [specialization, setSpecialization] = useState("");
+  const [specialty, setSpecialty] = useState("");
   const [gender, setGender] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -33,8 +33,10 @@ const SignUp = () => {
         email,
         password,
         role,
+        specialty,
       });
       console.log(response.data);
+      alert("Signup successful");
       router.push("/login");
     } catch (error) {
       if (error.response.status === 400) {
@@ -115,10 +117,10 @@ const SignUp = () => {
                       Specialization
                       <select
                         className="flex flex-col space-y-1.5 p-3 bg-gray-100 rounded-md"
-                        name="specialization"
-                        id="specialization"
-                        value={specialization}
-                        onChange={(e) => setSpecialization(e.target.value)}
+                        name=" specialty"
+                        id=" specialty"
+                        value={specialty}
+                        onChange={(e) => setSpecialty(e.target.value)}
                         required
                       >
                         <option value="">select your specialization</option>

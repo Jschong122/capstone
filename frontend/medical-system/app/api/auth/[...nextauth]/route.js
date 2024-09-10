@@ -1,6 +1,6 @@
 import NextAuth from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
 import axios from "axios";
+import CredentialsProvider from "next-auth/providers/credentials";
 
 export const authOptions = {
   providers: [
@@ -15,6 +15,7 @@ export const authOptions = {
 
       async authorize(credentials) {
         try {
+          console.log("Attempting to authenticate with:", credentials);
           const response = await axios.post(
             "http://localhost:5000/users/login",
             {
@@ -23,33 +24,45 @@ export const authOptions = {
             }
           );
 
-          // if the user's credentials are valid, then return the user's information
-          if (response.status === 201) {
-            console.log("Authentication successful:", response.status);
+          console.log("Authentication response:", response.data);
+
+          if (response.status === 200 && response.data.user) {
+            console.log("Authentication successful:", response.data.user);
             return response.data.user;
-          } else if (response.status === 200) {
-            console.log("Authentication successful:", response.status);
-            return response.data.user;
+          } else if (response.status === 400) {
+            console.log("Authentication failed:", error.message);
+            return null;
           } else {
-            console.log("Authentication failed:", response.status);
+            console.log(
+              "Authentication failed:",
+              response.status,
+              response.data
+            );
             return null;
           }
         } catch (error) {
-          console.error("Authentication error:", error);
+          console.error(
+            "Authentication error:",
+            error.response.data,
+            error.message
+          );
           return null;
         }
       },
     }),
   ],
 
+  secret: process.env.NEXTAUTH_SECRET,
+
   // if user is not null, then add the user's information to the token
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, secret }) {
       if (user) {
         token.id = user.id;
-        token.role = user.role;
+        token.secret = secret;
         token.email = user.email;
         token.name = user.name;
+        token.role = user.role;
       }
       return token;
     },
@@ -59,12 +72,15 @@ export const authOptions = {
       session.user.role = token.role;
       session.user.email = token.email;
       session.user.name = token.name;
+
       return session;
     },
   },
   pages: {
     signIn: "/login",
+    signUp: "/signup",
   },
 };
 
-export default NextAuth(authOptions);
+const handler = NextAuth(authOptions);
+export { handler as GET, handler as POST };
