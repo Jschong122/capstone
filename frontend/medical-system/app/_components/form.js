@@ -1,18 +1,37 @@
 import React from "react";
 import { useState } from "react";
 import axios from "axios";
+import { useEffect } from "react";
 
-const Form = ({}) => {
+const Form = ({ session }) => {
+  console.log(session, "in form");
   const [doctor, setDoctor] = useState("");
   const [date, setDate] = useState("");
   const [message, setMessage] = useState("");
+  const [doctorList, setDoctorList] = useState([]);
+
+  useEffect(() => {
+    getDoctorList();
+  }, []);
+
+  // fetch doctor list
+  async function getDoctorList() {
+    try {
+      const res = await axios.get("http://localhost:5000/doctors");
+      console.log(res.data, "doctors");
+      setDoctorList(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   const handleSubmit = () => {
     console.log(doctor, date, message);
 
     axios.post("http://localhost:5000/appointments/create", {
-      patientId: "session.user.id",
-      patientName: "session.user.name",
+      patientId: session.id,
+      patientName: session.name,
+      patientEmail: session.email,
       doctor,
       date,
       message,
@@ -40,12 +59,11 @@ const Form = ({}) => {
                 <option className=" m-2" value="">
                   Select Doctor
                 </option>
-                <option className=" m-2" value="Dr. John Doe">
-                  Dr. John Doe
-                </option>
-                <option className=" m-2" value="Dr. Jane Doe">
-                  Dr. Jane Doe
-                </option>
+                {doctorList.map((doctor) => (
+                  <option key={doctor.id} value={doctor.id}>
+                    Dr. {doctor.name}
+                  </option>
+                ))}
               </select>
             </div>
 
