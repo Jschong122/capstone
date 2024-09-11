@@ -21,13 +21,6 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.post("/", async (req, res) => {
-  const { name, email, password } = req.body;
-  const doctor = await DoctorModel.create({ name, email, password });
-  res.status(201).json(doctor);
-  res.status(400).json({ message: "Invalid request" });
-});
-
 router.put("/:id", async (req, res) => {
   const { id } = req.params;
   const { name, email, password, role } = req.body;

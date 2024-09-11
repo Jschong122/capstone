@@ -27,8 +27,8 @@ const NavBar = () => {
             </Link>
           </li>
           <li>
-            <Link href="/patients" className="text-white hover:text-gray-300">
-              Patients
+            <Link href="/doctors" className="text-white hover:text-gray-300">
+              Our doctors
             </Link>
           </li>
           <li>

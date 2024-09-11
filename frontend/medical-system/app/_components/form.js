@@ -41,15 +41,15 @@ const Form = ({ session }) => {
   };
 
   return (
-    <div className="w-full h-full">
-      <div className="  flex flex-col items-center justify-center ">
-        <h1 className="text-3xl font-bold justify-center items-center m-5 ">
+    <div className="h-screen">
+      <div className="  flex flex-col items-center justify-center m-5 ">
+        <h1 className="font-bold justify-center items-center m-5 ">
           Book your next appointment
         </h1>
 
-        <form className=" flex flex-col md:flex-row">
+        <form className=" flex flex-col md:flex-row ">
           {/* select doctor */}
-          <div className="flex flex-col items-start justify-center">
+          <div className="flex flex-col items-start justify-center m-5">
             <div>
               <label className="text-xl font-bold">preferred doctor</label>
               <select
