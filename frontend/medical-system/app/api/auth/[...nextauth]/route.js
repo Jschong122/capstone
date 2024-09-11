@@ -56,10 +56,9 @@ export const authOptions = {
 
   // if user is not null, then add the user's information to the token
   callbacks: {
-    async jwt({ token, user, secret }) {
+    async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        token.secret = secret;
         token.email = user.email;
         token.name = user.name;
         token.role = user.role;
