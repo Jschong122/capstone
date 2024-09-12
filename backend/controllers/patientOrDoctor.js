@@ -69,4 +69,35 @@ const patientOrDoctorLogin = async (req, res, next) => {
   }
 };
 
-export { patientOrDoctorSignup, patientOrDoctorLogin };
+//check if the user is a patient or doctor
+const checkPatientOrDoctor = async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const [patientExists, doctorExists] = await Promise.all([
+      PatientModel.findOne({ _id: id }),
+      DoctorModel.findOne({ _id: id }),
+    ]);
+
+    if (patientExists) {
+      req.user = patientExists;
+      req.userType = "patient";
+      console.log("This user is a patient:", req.user);
+    } else if (doctorExists) {
+      req.user = doctorExists;
+      req.userType = "doctor";
+      console.log("This user is a doctor:", req.user);
+    } else {
+      console.error("User not found");
+      return res.status(400).json({ message: "user not found" });
+    }
+
+    next();
+  } catch (error) {
+    console.error("Error when checking user information", error);
+    res
+      .status(500)
+      .json({ message: "Server error when checking user information" });
+  }
+};
+
+export { patientOrDoctorSignup, patientOrDoctorLogin, checkPatientOrDoctor };

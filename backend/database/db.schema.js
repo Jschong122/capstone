@@ -16,7 +16,7 @@ const doctorSchema = new mongoose.Schema({
   specialty: {
     type: String,
   },
-  profileImageUrl: String,
+  imageUrl: String,
 });
 
 const patientSchema = new mongoose.Schema({
@@ -34,9 +34,7 @@ const patientSchema = new mongoose.Schema({
   gender: {
     type: String,
   },
-  birthday: {
-    type: String,
-  },
+  imageUrl: String,
 });
 
 const appointmentSchema = new mongoose.Schema({

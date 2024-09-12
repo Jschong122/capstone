@@ -19,8 +19,8 @@ const NavBar = () => {
 
   return (
     <div>
-      <nav className="bg-dark-green flex p-5 justify-between">
-        <ul className="flex space-x-4 ">
+      <nav className="bg-dark-green flex p-3 justify-between">
+        <ul className="flex space-x-4  items-center">
           <li>
             <Link href="/" className="text-white hover:text-gray-300">
               Home

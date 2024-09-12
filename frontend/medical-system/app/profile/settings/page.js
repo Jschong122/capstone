@@ -3,10 +3,48 @@
 import React from "react";
 import { useSession } from "next-auth/react";
 import UserInfo from "@/app/_components/UserInfo";
-import { Minus } from "lucide-react";
-
+import { useState, useEffect } from "react";
+import axios from "axios";
 const ProfileSettings = () => {
   const { data: session } = useSession();
+  const [image, setImage] = useState();
+
+  // handle image change when user choose a file
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setImage(file);
+  };
+  console.log(image);
+
+  // handle submit when user click on save changes
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!image) {
+      console.log("Please choose an image");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("image", image, image.name);
+    try {
+      const uploadImage = await axios.post(
+        `http://localhost:5000/api/upload/${session.user.id}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      // if image uploaded successfully
+      if (uploadImage.status === 200) {
+        console.log("Image uploaded successfully");
+      }
+      console.log(uploadImage);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <div>
@@ -20,7 +58,7 @@ const ProfileSettings = () => {
           <form className="space-y-4 mt-8">
             <div>
               <h1 className="font-bold mb-3"> Edit your profile</h1>
-              <label
+              {/* <label
                 htmlFor="name"
                 className="block text-sm font-medium text-gray-700"
               >
@@ -32,7 +70,7 @@ const ProfileSettings = () => {
                 name="name"
                 defaultValue={session?.user?.name}
                 className="mt-1 block w-full rounded-lg p-2"
-              />
+              /> */}
             </div>
 
             <div>
@@ -43,11 +81,11 @@ const ProfileSettings = () => {
                 Profile Picture
               </label>
               <div className="mt-1 flex items-center">
-                <span className="inline-block h-12 w-12 rounded-full overflow-hidden bg-gray-100">
-                  {session?.user?.image ? (
+                <span className="inline-block h-[100px] w-[100px] rounded-full overflow-hidden bg-gray-100">
+                  {image ? (
                     <img
-                      src={session.user.image}
-                      alt="profile picture"
+                      src={URL.createObjectURL(image)}
+                      alt="Profile"
                       className="h-full w-full object-cover"
                     />
                   ) : (
@@ -60,24 +98,26 @@ const ProfileSettings = () => {
                     </svg>
                   )}
                 </span>
-                <button
-                  type="button"
-                  className="ml-5 bg-white py-2 px-3 rounded-lg  text-sm  font-medium text-black"
+                <label
+                  htmlFor="avatar"
+                  className="ml-5 bg-white py-2 px-3 rounded-lg text-sm font-medium text-black cursor-pointer"
                 >
-                  Change
-                </button>
+                  Choose a file
+                </label>
                 <input
                   type="file"
                   id="avatar"
                   name="avatar"
                   accept="image/*"
                   className="hidden"
+                  onChange={handleImageChange}
                 />
               </div>
             </div>
 
             <div>
               <button
+                onClick={handleSubmit}
                 type="submit"
                 className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-dark-green hover:bg-light-green "
               >
