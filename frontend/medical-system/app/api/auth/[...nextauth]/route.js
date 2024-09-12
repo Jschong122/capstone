@@ -62,6 +62,7 @@ export const authOptions = {
         token.email = user.email;
         token.name = user.name;
         token.role = user.role;
+        token.imageUrl = user.imageUrl;
       }
       return token;
     },
@@ -71,6 +72,7 @@ export const authOptions = {
       session.user.role = token.role;
       session.user.email = token.email;
       session.user.name = token.name;
+      session.user.imageUrl = token.imageUrl;
 
       return session;
     },

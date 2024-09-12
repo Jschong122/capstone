@@ -56,6 +56,7 @@ router.post("/signup", patientOrDoctorSignup, async (req, res) => {
         email: createUser.email,
         role: createUser.role,
         name: createUser.name,
+        imageUrl: createUser.imageUrl,
       },
     });
   } catch (error) {
@@ -83,6 +84,7 @@ router.post("/login", patientOrDoctorLogin, async (req, res) => {
         email: user.email,
         role: user.role,
         specialty: user.specialty,
+        imageUrl: user.imageUrl,
       },
     });
   } catch (error) {

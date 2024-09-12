@@ -26,7 +26,7 @@ app.use("/users", usersRouter);
 app.use("/doctors", doctorRouter);
 app.use("/patients", patientRouter);
 app.use("/appointments", appointmentRouter);
-app.use("/api/upload", imageUploadRouter);
+app.use("/api", imageUploadRouter);
 
 app.get("/", (req, res) => {
   res.send(`"Hello World" `);

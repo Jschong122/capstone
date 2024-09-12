@@ -12,6 +12,31 @@
         "uriFormat": "%s",
         "action": "debugWithChrome"
       }
+    },
+    {
+      "name": "Backend",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/backend/server.js",
+      "cwd": "${workspaceFolder}/backend",
+      "env": {
+        "NODE_ENV": "development"
+      },
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Frontend",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}/frontend/medical-system",
+      "sourceMapPathOverrides": {
+        "webpack:///_N_E/*": "${webRoot}/*",
+        "webpack:///./node_modules/*": "${webRoot}/node_modules/*",
+        "webpack:///*": "*",
+        "webpack:///src/*": "${webRoot}/src/*",
+        "webpack:///./*": "${webRoot}/*"
+      }
     }
   ]
 }
