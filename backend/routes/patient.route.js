@@ -6,7 +6,11 @@ const router = Router();
 router.get("/", async (req, res) => {
   try {
     const patients = await PatientModel.find();
-    res.json(patients);
+    const patientsWithRole = patients.map((patient) => ({
+      ...patient.toObject(),
+      role: "Patient",
+    }));
+    res.json(patientsWithRole);
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }

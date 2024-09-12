@@ -1,7 +1,6 @@
 import NextAuth from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
 import axios from "axios";
-import SignUp from "@/app/signup/page";
+import CredentialsProvider from "next-auth/providers/credentials";
 
 export const authOptions = {
   providers: [
@@ -16,6 +15,7 @@ export const authOptions = {
 
       async authorize(credentials) {
         try {
+          console.log("Attempting to authenticate with:", credentials);
           const response = await axios.post(
             "http://localhost:5000/users/login",
             {
@@ -24,31 +24,45 @@ export const authOptions = {
             }
           );
 
-          // if the user's credentials are valid, then return the user's information
+          console.log("Authentication response:", response.data);
 
-          if (response.status === 200) {
-            console.log("Authentication successful:", response.status);
+          if (response.status === 200 && response.data.user) {
+            console.log("Authentication successful:", response.data.user);
             return response.data.user;
+          } else if (response.status === 400) {
+            console.log("Authentication failed:", error.message);
+            return null;
           } else {
-            console.log("Authentication failed:", response.status);
+            console.log(
+              "Authentication failed:",
+              response.status,
+              response.data
+            );
             return null;
           }
         } catch (error) {
-          console.error("Authentication error:", error);
+          console.error(
+            "Authentication error:",
+            error.response.data,
+            error.message
+          );
           return null;
         }
       },
     }),
   ],
 
+  secret: process.env.NEXTAUTH_SECRET,
+
   // if user is not null, then add the user's information to the token
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        token.role = user.role;
         token.email = user.email;
         token.name = user.name;
+        token.role = user.role;
+        token.imageUrl = user.imageUrl;
       }
       return token;
     },
@@ -58,6 +72,7 @@ export const authOptions = {
       session.user.role = token.role;
       session.user.email = token.email;
       session.user.name = token.name;
+      session.user.imageUrl = token.imageUrl;
 
       return session;
     },

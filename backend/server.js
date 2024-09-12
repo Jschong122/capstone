@@ -6,10 +6,8 @@ import { doctorRouter } from "./routes/doctor.route.js";
 import { patientRouter } from "./routes/patient.route.js";
 import { appointmentRouter } from "./routes/appointment.route.js";
 import { usersRouter } from "./routes/users.route.js";
-import {
-  patientOrDoctorSignup,
-  patientOrDoctorLogin,
-} from "./controllers/patientOrDoctor.js";
+import { imageUploadRouter } from "./routes/imageUpload.route.js";
+import { verifyToken } from "./controllers/verifyToken.js";
 
 dotenv.config();
 
@@ -17,6 +15,7 @@ const app = express();
 
 // Middleware
 app.use(cors(process.env.CORS_ORIGIN));
+
 app.use(express.json());
 
 // Connect to MongoDB
@@ -24,10 +23,10 @@ dbConnect();
 
 // Routes
 app.use("/users", usersRouter);
-
 app.use("/doctors", doctorRouter);
 app.use("/patients", patientRouter);
 app.use("/appointments", appointmentRouter);
+app.use("/api", imageUploadRouter);
 
 app.get("/", (req, res) => {
   res.send(`"Hello World" `);
@@ -39,4 +38,4 @@ app.listen(PORT, () => {
   console.log(`"http://localhost:${PORT}"`);
 });
 
-export { app };
+export default app;

@@ -13,8 +13,10 @@ const doctorSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  specialty: String,
-  profileImageUrl: String,
+  specialty: {
+    type: String,
+  },
+  imageUrl: String,
 });
 
 const patientSchema = new mongoose.Schema({
@@ -32,9 +34,7 @@ const patientSchema = new mongoose.Schema({
   gender: {
     type: String,
   },
-  birthday: {
-    type: String,
-  },
+  imageUrl: String,
 });
 
 const appointmentSchema = new mongoose.Schema({
@@ -48,21 +48,17 @@ const appointmentSchema = new mongoose.Schema({
     ref: "Patient",
     required: true,
   },
-  date: {
+  appointmentTime: {
     type: Date,
     required: true,
   },
-  appointmentTime: Date,
   status: {
     type: String,
     default: "confirmed",
     enum: ["confirmed", "cancelled", "completed"],
   },
-  userNotes: String,
+  patientNotes: String,
   doctorNotes: String,
-  patientName: String,
-  doctorName: String,
-  doctorSpecialty: String,
 });
 
 const chatHistorySchema = new mongoose.Schema({

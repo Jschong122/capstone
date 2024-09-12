@@ -1,51 +1,101 @@
 import React from "react";
 import { useState } from "react";
 import axios from "axios";
+import { useEffect } from "react";
+import { useSession } from "next-auth/react";
+import BackEndUrl from "@/lib/tokenMiddleware";
 
-const Form = ({}) => {
+const Form = () => {
+  const { data: session } = useSession("");
   const [doctor, setDoctor] = useState("");
   const [date, setDate] = useState("");
   const [message, setMessage] = useState("");
+  const [doctorList, setDoctorList] = useState([]);
+  const [patient_id, setPatientId] = useState("");
+  const [doctor_id, setDoctorId] = useState("");
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState(false);
+  useEffect(() => {
+    getDoctorList();
+  }, []);
 
-  const handleSubmit = () => {
-    console.log(doctor, date, message);
+  // fetch doctor list
+  async function getDoctorList() {
+    try {
+      const res = await axios.get("http://localhost:5000/doctors");
+      console.log(res.data, "doctors");
+      setDoctorList(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
-    axios.post("http://localhost:5000/appointments/create", {
-      patientId: "session.user.id",
-      patientName: "session.user.name",
-      doctor,
-      date,
-      message,
-    });
+  // get patient id
+  function getPatientId() {
+    const id = session?.user?.id;
+    setPatientId(id);
+  }
+  // get doctor id
+  function getDoctorId() {
+    const selectedDoctor = doctorList.find((d) => d.name === doctor);
+    if (selectedDoctor) {
+      setDoctorId(selectedDoctor?._id);
+    }
+  }
 
-    console.log("Form submitted");
+  useEffect(() => {
+    getPatientId();
+    getDoctorId();
+  }, [doctor]);
+
+  const handleDoctorChange = async (e) => {
+    const selectedDoctor = e.target.value;
+    await setDoctor(selectedDoctor);
+    getDoctorId();
+  };
+
+  const handleSubmit = async () => {
+    console.log(patient_id, "patient id");
+    console.log(doctor_id, "doctor id");
+    console.log(date, "date");
+    console.log(message, "message");
+
+    try {
+      await axios.post(`http://localhost:5000/appointments/create`, {
+        patientId: patient_id,
+        doctorId: doctor_id,
+        date,
+        message,
+      });
+      console.log("Form submitted");
+      setSuccess(true);
+    } catch (error) {
+      console.log(error);
+      setError(true);
+    }
   };
 
   return (
-    <div className="w-full h-full">
-      <div className="  flex flex-col items-center justify-center ">
-        <h1 className="text-3xl font-bold justify-center items-center m-5 ">
+    <div className="h-screen">
+      <div className="  flex flex-col items-center justify-center m-5 ">
+        <h1 className="font-bold justify-center items-center m-5 ">
           Book your next appointment
         </h1>
 
-        <form className=" flex flex-col md:flex-row">
+        <form className=" flex flex-col md:flex-row ">
           {/* select doctor */}
-          <div className="flex flex-col items-start justify-center">
+          <div className="flex flex-col items-start justify-center m-5">
             <div>
               <label className="text-xl font-bold">preferred doctor</label>
-              <select
-                className=" m-2"
-                onChange={(e) => setDoctor(e.target.value)}
-              >
+              <select className=" m-2" onChange={handleDoctorChange}>
                 <option className=" m-2" value="">
                   Select Doctor
                 </option>
-                <option className=" m-2" value="Dr. John Doe">
-                  Dr. John Doe
-                </option>
-                <option className=" m-2" value="Dr. Jane Doe">
-                  Dr. Jane Doe
-                </option>
+                {doctorList.map((doctor) => (
+                  <option key={doctor.id} value={doctor.id}>
+                    {doctor.name}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -74,9 +124,30 @@ const Form = ({}) => {
         >
           Book Appointment
         </button>
+
+        {success ? (
+          <h3 className="text-green-500">
+            Appointment booked successfully
+            <p className="text-black flex flex-col outline outline-2 outline-black p-3 mt-3">
+              <h3 className="underline">Your appointment detail</h3>
+              <br />
+              date: {date}
+              <br />
+              doctor: {doctor}
+              <br />
+              {message === "" ? "No message" : "message: " + message}
+            </p>
+          </h3>
+        ) : (
+          ""
+        )}
+        {error ? (
+          <h3 className="text-red-500">Error booking appointment</h3>
+        ) : (
+          ""
+        )}
       </div>
     </div>
   );
 };
-
 export default Form;

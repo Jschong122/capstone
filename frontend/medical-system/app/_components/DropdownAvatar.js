@@ -18,7 +18,22 @@ const DropdownAvatar = (data) => {
     <div className="cursor-pointer ">
       <DropdownMenu>
         <DropdownMenuTrigger className="flex items-center">
-          <UserPen className="mx-2" /> Hi, {session?.user?.name}
+          {session?.user?.imageUrl ? (
+            <img
+              src={session?.user?.imageUrl}
+              alt={`${session?.user?.name}'s profile`}
+              style={{
+                width: "40px",
+                height: "40px",
+                borderRadius: "50%",
+                objectFit: "cover",
+                marginRight: "10px",
+              }}
+            />
+          ) : (
+            <UserPen className="mx-2" />
+          )}
+          Hi, {session?.user?.name}
           <ChevronDown className="mx-2" />
         </DropdownMenuTrigger>
         <DropdownMenuContent>
@@ -26,18 +41,21 @@ const DropdownAvatar = (data) => {
             My Account
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem
-            onClick={() => router.push("/profile/settings")}
-            className="cursor-pointer"
-          >
-            Profile
-          </DropdownMenuItem>
           <DropdownMenuItem className="cursor-pointer">
             My Appointments
           </DropdownMenuItem>
 
-          <DropdownMenuItem className="cursor-pointer">
-            My Medical Records
+          <DropdownMenuItem
+            className="cursor-pointer"
+            onClick={() => router.push("/profile/book-appointment")}
+          >
+            Book Appointment
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => router.push("/profile/settings")}
+            className="cursor-pointer"
+          >
+            settings
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() => {
