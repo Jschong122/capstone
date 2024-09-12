@@ -50,21 +50,17 @@ const appointmentSchema = new mongoose.Schema({
     ref: "Patient",
     required: true,
   },
-  date: {
+  appointmentTime: {
     type: Date,
     required: true,
   },
-  appointmentTime: Date,
   status: {
     type: String,
     default: "confirmed",
     enum: ["confirmed", "cancelled", "completed"],
   },
-  userNotes: String,
+  patientNotes: String,
   doctorNotes: String,
-  patientName: String,
-  doctorName: String,
-  doctorSpecialty: String,
 });
 
 const chatHistorySchema = new mongoose.Schema({

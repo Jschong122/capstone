@@ -16,7 +16,7 @@ const BookAppointment = () => {
 
   return (
     <div className=" w-full h-full">
-      <Form session={session?.user} />
+      <Form session={session} />
     </div>
   );
 };

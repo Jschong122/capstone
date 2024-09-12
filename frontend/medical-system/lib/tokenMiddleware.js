@@ -6,9 +6,9 @@ const BackEndUrl = axios.create({
 });
 
 BackEndUrl.interceptors.request.use(async (config) => {
-  const session = await getSession();
-  if (session?.user.id) {
-    config.headers.Authorization = `Bearer ${session.user.id}`;
+  const secret = process.env.NEXTAUTH_SECRET;
+  if (secret) {
+    config.headers.Authorization = `Bearer ${secret}`;
   }
   return config;
 });
