@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useState, useEffect } from "react";
-import Form from "../_components/form";
+import Form from "@/app/_components/form";
 import { useSession } from "next-auth/react";
 
 const BookAppointment = () => {

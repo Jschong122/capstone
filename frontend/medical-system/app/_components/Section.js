@@ -62,7 +62,7 @@ export function PatientSection() {
                 </p>
 
                 <a
-                  href="/book-appointment"
+                  href="/profile/book-appointment"
                   className="mt-8 inline-block rounded-full bg-dark-green px-8 py-3  font-medium text-white transition hover:bg-green-700 focus:outline-none focus:ring"
                 >
                   Book an appointment
