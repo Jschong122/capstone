@@ -25,7 +25,7 @@ dbConnect();
 app.use("/users", usersRouter);
 app.use("/doctors", doctorRouter);
 app.use("/patients", patientRouter);
-app.use("/appointments", verifyToken, appointmentRouter);
+app.use("/appointments", appointmentRouter);
 
 app.get("/", (req, res) => {
   res.send(`"Hello World" `);

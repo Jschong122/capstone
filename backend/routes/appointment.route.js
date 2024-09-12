@@ -22,8 +22,8 @@ router.post("/create", async (req, res) => {
     const appointment = await AppointmentModel.create({
       patientId,
       doctorId,
-      date,
-      message,
+      appointmentTime: date,
+      patientNotes: message,
     });
     res.status(201).json(appointment);
   } catch (error) {
