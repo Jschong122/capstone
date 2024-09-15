@@ -41,7 +41,10 @@ const DropdownAvatar = (data) => {
             My Account
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem className="cursor-pointer">
+          <DropdownMenuItem
+            className="cursor-pointer"
+            onClick={() => router.push("/profile/my-appointment")}
+          >
             My Appointments
           </DropdownMenuItem>
 

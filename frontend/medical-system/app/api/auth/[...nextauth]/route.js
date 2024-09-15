@@ -24,14 +24,11 @@ export const authOptions = {
             }
           );
 
-          console.log("Authentication response:", response.data);
-
           if (response.status === 200 && response.data.user) {
             console.log("Authentication successful:", response.data.user);
             return response.data.user;
-          } else if (response.status === 400) {
-            console.log("Authentication failed:", error.message);
-            return null;
+          } else if (response.status === 401 || 400) {
+            console.log("Authentication failed: user not found");
           } else {
             console.log(
               "Authentication failed:",
@@ -41,11 +38,11 @@ export const authOptions = {
             return null;
           }
         } catch (error) {
-          console.error(
-            "Authentication error:",
-            error.response.data,
-            error.message
-          );
+          if (error.message === "user not found") {
+            console.log("User not found");
+          } else {
+            console.error("Authentication error:", error);
+          }
           return null;
         }
       },
