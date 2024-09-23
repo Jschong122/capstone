@@ -9,6 +9,7 @@ const Form = () => {
   const { data: session } = useSession("");
   const [doctor, setDoctor] = useState("");
   const [date, setDate] = useState("");
+  const [time, setTime] = useState("");
   const [message, setMessage] = useState("");
   const [doctorList, setDoctorList] = useState([]);
   const [patient_id, setPatientId] = useState("");
@@ -65,6 +66,7 @@ const Form = () => {
         patientId: patient_id,
         doctorId: doctor_id,
         date,
+        time,
         message,
       });
       console.log("Form submitted");
@@ -76,13 +78,11 @@ const Form = () => {
   };
 
   return (
-    <div className="h-screen">
-      <div className="  flex flex-col items-center justify-center m-5 ">
-        <h1 className="font-bold justify-center items-center m-5 ">
-          Book your next appointment
-        </h1>
+    <div className="flex flex-col items-center justify-center">
+      <div className=" w-[80vw] flex flex-col items-center justify-center m-10 rounded-3xl shadow-md  bg-white">
+        <h1 className="font-bold m-5 ">Book your next appointment</h1>
 
-        <form className=" flex flex-col md:flex-row ">
+        <form className=" flex flex-col md:flex-row w-[60vw] ">
           {/* select doctor */}
           <div className="flex flex-col items-start justify-center m-5">
             <div>
@@ -108,17 +108,25 @@ const Form = () => {
                 onChange={(e) => setDate(e.target.value)}
               />
             </div>
+            <div className="flex  items-center justify-center">
+              <label className="text-xl font-bold">select Time</label>
+              <input
+                type="time"
+                className=" m-2 p-2 rounded-md"
+                onChange={(e) => setTime(e.target.value)}
+              />
+            </div>
 
             {/* message */}
           </div>
           <textarea
-            className=" m-2 p-5 h-[100px] max-w-[80%] max-h-[80%]"
+            className=" m-2 p-5 h-[200px] w-[20vw] bg-slate-100 rounded-3xl"
             placeholder="Please enter your message"
             onChange={(e) => setMessage(e.target.value)}
           ></textarea>
         </form>
         <button
-          disabled={doctor === "" || date === ""}
+          disabled={doctor === "" || date === "" || time === ""}
           className="bg-dark-green text-white p-2  m-3 flex justify-center items-center rounded-xl"
           onClick={handleSubmit}
         >
@@ -132,6 +140,8 @@ const Form = () => {
               <h3 className="underline">Your appointment detail</h3>
               <br />
               date: {date}
+              <br />
+              time: {time}
               <br />
               doctor: {doctor}
               <br />

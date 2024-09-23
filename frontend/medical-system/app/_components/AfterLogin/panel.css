@@ -1,0 +1,17 @@
+.record-body {
+  border: solid 2px black;
+  box-shadow: rgba(50, 173, 112, 0.781) 5px 5px 8px,
+    rgba(222, 235, 228, 0.295) 0px 15px 10px;
+  border-radius: 10px;
+  padding: 10px;
+  margin: 10px 80px;
+  width: 60vw;
+  height: 400px;
+}
+
+.btn {
+  background-color: lightblue;
+  padding: 2px 8px;
+  color: black;
+  margin-left: 10px;
+}
