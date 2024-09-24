@@ -7,11 +7,21 @@ import { patientRouter } from "./routes/patient.route.js";
 import { appointmentRouter } from "./routes/appointment.route.js";
 import { usersRouter } from "./routes/users.route.js";
 import { imageUploadRouter } from "./routes/imageUpload.route.js";
-import { verifyToken } from "./controllers/verifyToken.js";
+import { Server } from "socket.io";
+
+import { createServer } from "node:http";
 
 dotenv.config();
 
 const app = express();
+
+const server = createServer(app);
+const io = new Server(server, {
+  path: "/socket.io/chat",
+  cors: {
+    origin: process.env.CORS_ORIGIN,
+  },
+});
 
 // Middleware
 app.use(cors(process.env.CORS_ORIGIN));
@@ -32,10 +42,26 @@ app.get("/", (req, res) => {
   res.send(`"Hello World" `);
 });
 
+io.on("connection", (socket) => {
+  console.log("a user connected", socket.id);
+
+  //listen to new comment
+  socket.on("sendComment", ({ appointmentId, message, sender }) => {
+    console.log("Sending message:", message, "from sender:", sender);
+
+    socket.broadcast.emit("newComment", { message, sender });
+  });
+
+  // when disconnect
+  socket.on("disconnect", () => {
+    console.log("a user disconnected");
+  });
+});
+
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-  console.log(`"http://localhost:${PORT}"`);
+server.listen(PORT, () => {
+  console.log(`server is running on http://localhost:${PORT}`);
 });
 
 export default app;

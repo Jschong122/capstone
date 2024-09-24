@@ -3,14 +3,18 @@
 import Intro from "./_components/Intro";
 import { useSession } from "next-auth/react";
 import { PatientSection, DoctorSection } from "./_components/Section";
+import DoctorPanel from "./_components/afterLogin/DoctorPanel";
 
 export default function Home() {
   const { data: session } = useSession();
 
+  const doctorId = session?.user?.id;
+
   if (session?.user.role === "doctor") {
     return (
-      <div>
+      <div className="m-5 ">
         <DoctorSection />
+        <DoctorPanel doctorId={doctorId} />
       </div>
     );
   }

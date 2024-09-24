@@ -1,12 +1,9 @@
 .appointment-info {
-  background-color: rgb(255, 255, 254);
   color: black;
-  padding: 2rem;
+  padding-left: 1.5rem;
   font-size: 1rem;
   font-weight: normal;
-  margin: 1rem;
-  border-radius: 50px;
-  height: 2rem;
+
   display: flex;
   align-items: center;
 }
@@ -15,9 +12,13 @@
   padding-left: 1rem;
 }
 
+.chatroom {
+  background-color: rgb(255, 255, 254);
+}
+
 .messages {
-  margin: 1.5rem;
-  padding: 1rem;
+  margin: 1rem;
+  padding: 0.5rem;
 }
 
 .messages p {

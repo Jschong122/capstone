@@ -1,6 +1,7 @@
 import { Router } from "express";
 import AppointmentModel from "../models/appointment.model.js";
 import DoctorModel from "../models/doctor.model.js";
+import PatientModel from "../models/patient.model.js";
 
 const router = Router();
 
@@ -45,6 +46,38 @@ router.get("/:id", async (req, res) => {
     }));
 
     res.status(200).json(appointmentsWithDoctorNames);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
+
+//get appointments by doctorId
+router.get("/patient/:id", async (req, res) => {
+  try {
+    //get all patient under this doctor
+    const id = req.params.id;
+    const appointments = await AppointmentModel.find({ doctorId: id });
+
+    //get patientId from appointment
+    const patientIds = appointments.map((app) => app.patientId);
+    const patients = await PatientModel.find({ _id: { $in: patientIds } });
+    const patientNameMap = patients.reduce((acc, patient) => {
+      if (patient && patient.name) {
+        acc[patient._id.toString()] = patient.name;
+        return acc;
+      } else {
+        console.warn("patient name not found");
+      }
+      return acc;
+    }, {});
+
+    const appointmentsWithPatientName = appointments.map((app) => ({
+      ...app.toObject(),
+      patientName:
+        patientNameMap[app.patientId.toString()] || "Unknown Patient",
+    }));
+
+    res.status(200).json(appointmentsWithPatientName);
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }

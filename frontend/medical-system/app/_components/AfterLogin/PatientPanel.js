@@ -32,7 +32,7 @@ const PatientPanel = ({ patientId }) => {
     }
   }
 
-  function completeFile() {
+  function completeFile(patientId) {
     const referenceId = list[0]._id;
     try {
       const response = axios.put(
