@@ -19,7 +19,7 @@ const server = createServer(app);
 const io = new Server(server, {
   path: "/socket.io/chat",
   cors: {
-    origin: process.env.CORS_ORIGIN,
+    origin: "*",
   },
 });
 
@@ -46,26 +46,36 @@ io.on("connection", (socket) => {
   console.log("a user connected", socket.id);
 
   // Listen for joinAppointment event
-  socket.on("joinAppointment", ({ appointmentId }) => {
-    if (appointmentId) {
-      socket.join(appointmentId);
-      socket.emit("joinedAppointment", { socketId: socket.id });
-      console.log("User joined room:", appointmentId);
-    } else {
-      console.log("Invalid appointmentId");
-    }
+  socket.on("joinAppointment", (appointmentId) => {
+    // Leave all other rooms before joining the new one
+    Object.keys(socket.rooms).forEach((room) => {
+      if (room !== socket.id) {
+        socket.leave(room);
+      }
+    });
+
+    socket.join(appointmentId);
+    console.log(`User ${socket.id} joined appointment: ${appointmentId}`);
+  });
+
+  // Listen for leaveAppointment event
+  socket.on("leaveAppointment", (appointmentId) => {
+    socket.leave(appointmentId);
+    console.log(`User ${socket.id} left appointment: ${appointmentId}`);
   });
 
   // Listen for new comment
-  socket.on("sendComment", ({ message, sender }) => {
-    socket.broadcast.emit("newComment", { message, sender });
+  // Listen for new comment
+  socket.on("sendComment", ({ appointmentId, message, sender }) => {
+    // Emit the event to the specific room
+    io.to(appointmentId).emit("newComment", { message, sender });
     console.log("Sending message:", message, "from sender:", sender);
-    console.log("Broadcasted newComment");
+    console.log("Broadcasted newComment to room:", appointmentId);
   });
 
   // when disconnect
   socket.on("disconnect", () => {
-    console.log("a user disconnected");
+    console.log("User disconnected");
   });
 });
 

@@ -17,7 +17,7 @@ const page = () => {
   const [role, setRole] = useState(false);
 
   const { data: session } = useSession();
-  console.log(session, "session");
+
   const roleFromUser = session?.user?.role;
 
   const idFromUser = session?.user?.id;
@@ -38,9 +38,11 @@ const page = () => {
     setRole(roleFromUser);
   }, [roleFromUser]);
 
-  // Connect/define to socket server
+  //define to socket server
   const socket = useRef(null);
+  const currentRoom = useRef(null);
 
+  //socket.io ----------------------------------------------------------------------
   useEffect(() => {
     socket.current = io("http://localhost:5000", {
       path: "/socket.io/chat",
@@ -48,34 +50,73 @@ const page = () => {
 
     // connect to socket server
     socket.current.connect();
-    console.log("Connected to socket server");
+    console.log("Connecting to socket server...");
 
-    // join the appointment room
-    console.log("Current appointmentId:", appointmentId);
-    console.log(
-      `User joined room:  ${appointmentId} , user is a ${role} ${userId} `
-    );
-    setSocketId(true);
-    socket.current.emit("joinAppointment", appointmentId);
-
-    socket.current.on("newComment", ({ message, sender }) => {
-      console.log("Received message:", message, "from sender:", sender);
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { text: message, sender: sender },
-      ]);
-      setSender(sender);
+    socket.current.on("connect", () => {
+      // get socket id
+      try {
+        setSocketId(socket.current.id);
+        console.log("Connected to socket server:", socket.current.id);
+      } catch (error) {
+        console.log("Error:", error);
+      }
     });
-    console.log("Listening for newComment");
 
+    // join room
+    if (socket.current) {
+      // Leave the previous room if any
+
+      socket.current.emit("leaveAppointment", currentRoom.current);
+
+      // Join the new room
+      socket.current.emit("joinAppointment", appointmentId);
+      console.log(
+        `Successfully joined appointment room:", ${appointmentId}, user is a ${role} ${userId}`
+      );
+
+      // Update the current room
+      currentRoom.current = appointmentId;
+      console.log("updated current room:", currentRoom.current);
+
+      // Clear messages from the previous room
+      setMessages([]);
+    }
     // disconnect from socket server
     return () => {
       if (socket.current) {
+        if (currentRoom.current) {
+          socket.current.emit("leaveAppointment", currentRoom.current);
+        }
         socket.current.disconnect();
         console.log("Disconnected from socket server");
       }
     };
-  }, [session, appointmentId]);
+  }, [appointmentId, userId, role]);
+
+  // const handleSend = () => {
+  //   const message = document.querySelector(".text-area").value;
+  //   setMessage(message);
+  //   document.querySelector(".text-area").value = "";
+
+  //   // Emit message to server
+  //   if (appointmentId) {
+  //     socket.current.emit("sendComment", {
+  //       appointmentId: appointmentId,
+  //       message: message,
+  //       sender: role,
+  //     });
+  //     console.log("Emitted message:", message, "from sender:", role);
+
+  //     setMessages((prevMessage) => [
+  //       ...prevMessage,
+  //       { text: message, sender: role },
+  //     ]);
+
+  //     setMessage("");
+  //   } else {
+  //     console.log("no socket.id");
+  //   }
+  // };
 
   const handleSend = () => {
     const message = document.querySelector(".text-area").value;
@@ -83,22 +124,40 @@ const page = () => {
     document.querySelector(".text-area").value = "";
 
     // Emit message to server
-    socket.current.emit("sendComment", {
-      appointmentId: appointmentId,
-      message: message,
-      sender: role,
-    });
-    console.log(role, "role");
-    setMessages((prevMessage) => [
-      ...prevMessage,
-      { text: message, sender: role },
-    ]);
-
-    setSender(role);
-    setMessage("");
+    if (appointmentId) {
+      socket.current.emit("sendComment", {
+        appointmentId: appointmentId,
+        message: message,
+        sender: role,
+      });
+      console.log("Emitted message:", message, "from sender:", role);
+    } else {
+      console.log("no socket.id");
+    }
   };
 
-  console.log("messages", messages);
+  useEffect(() => {
+    const handleNewComment = (data) => {
+      console.log("Received data:", data);
+      const { message, sender } = data;
+      console.log("Received message:", message, "from sender:", sender);
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { text: message, sender: sender },
+      ]);
+    };
+
+    if (socket.current) {
+      // Listen for newComment
+      socket.current.on("newComment", handleNewComment);
+      console.log("Listening for newComment event");
+
+      return () => {
+        socket.current.off("newComment", handleNewComment);
+      };
+    }
+  }, [role, appointmentId, userId]);
+  console.log("Messages:", messages);
 
   return (
     <div className="flex flex-col items-center justify-center h-full">
@@ -106,13 +165,13 @@ const page = () => {
         <h3>
           Please enter your symptoms here, your doctor will review it later
         </h3>
-        {socketId ? (
-          <p className="flex items-center ">
+        {setSocketId ? (
+          <span className="flex items-center ">
             Connected
             <GreenDotAnimation />
-          </p>
+          </span>
         ) : (
-          <p> Not connected </p>
+          <span> Not connected </span>
         )}
       </div>
 
