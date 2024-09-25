@@ -8,26 +8,35 @@ import GreenDotAnimation from "@/app/_components/lotties/greenDot.js";
 import { useSession } from "next-auth/react";
 
 const page = () => {
-  const [appId, setAppId] = useState("");
-  const [id, setId] = useState("");
+  const [appointmentId, setAppointmentId] = useState("");
+  const [userId, setUserId] = useState("");
   const [socketId, setSocketId] = useState();
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
-  const [doctor, setDoctor] = useState(false);
-  const [patient, setPatient] = useState(false);
-  const [sender, setSender] = useState("");
+
+  const [role, setRole] = useState(false);
 
   const { data: session } = useSession();
-  const role = session?.user?.role;
-  const userId = session?.user?.id;
+  console.log(session, "session");
+  const roleFromUser = session?.user?.role;
+
+  const idFromUser = session?.user?.id;
 
   useEffect(() => {
-    if (role === "doctor") {
-      setDoctor(true);
-    } else if (role === "patient") {
-      setPatient(true);
-    }
+    //get appointment info
+    const url = window.location.href;
+    const id = url.substring(url.lastIndexOf("/") + 1);
+
+    setAppointmentId(id);
   }, [session]);
+
+  useEffect(() => {
+    setUserId(idFromUser);
+  }, [idFromUser]);
+
+  useEffect(() => {
+    setRole(roleFromUser);
+  }, [roleFromUser]);
 
   // Connect/define to socket server
   const socket = useRef(null);
@@ -37,24 +46,36 @@ const page = () => {
       path: "/socket.io/chat",
     });
 
-    socket.current.on("connect", () => {
-      console.log("Connected to socket server");
-      setSocketId(socket.current.id);
+    // connect to socket server
+    socket.current.connect();
+    console.log("Connected to socket server");
+
+    // join the appointment room
+    console.log("Current appointmentId:", appointmentId);
+    console.log(
+      `User joined room:  ${appointmentId} , user is a ${role} ${userId} `
+    );
+    setSocketId(true);
+    socket.current.emit("joinAppointment", appointmentId);
+
+    socket.current.on("newComment", ({ message, sender }) => {
+      console.log("Received message:", message, "from sender:", sender);
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { text: message, sender: sender },
+      ]);
+      setSender(sender);
     });
+    console.log("Listening for newComment");
 
     // disconnect from socket server
     return () => {
-      socket.current.disconnect();
-      console.log("Disconnected from socket server");
+      if (socket.current) {
+        socket.current.disconnect();
+        console.log("Disconnected from socket server");
+      }
     };
-  }, []);
-
-  useEffect(() => {
-    //get appointment info
-    const url = window.location.href;
-    const id = url.substring(url.lastIndexOf("/") + 1);
-    setAppId(id);
-  }, []);
+  }, [session, appointmentId]);
 
   const handleSend = () => {
     const message = document.querySelector(".text-area").value;
@@ -63,7 +84,7 @@ const page = () => {
 
     // Emit message to server
     socket.current.emit("sendComment", {
-      appointmentId: appId,
+      appointmentId: appointmentId,
       message: message,
       sender: role,
     });
@@ -76,18 +97,6 @@ const page = () => {
     setSender(role);
     setMessage("");
   };
-
-  //receive message from server
-  useEffect(() => {
-    socket.current.on("newComment", ({ message, sender }) => {
-      console.log("Received message:", message, "from sender:", sender);
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { text: message, sender: sender },
-      ]);
-      setSender(sender);
-    });
-  }, []);
 
   console.log("messages", messages);
 
@@ -109,7 +118,7 @@ const page = () => {
 
       <div className="appointment-info">
         <h4> Appointment reference: </h4>
-        <p> {appId}</p>
+        <p> {appointmentId}</p>
       </div>
       <div className="chatroom mx-auto w-full max-w-3xl">
         <div className="messages flex flex-col mt-3 px-auto  min-h-[300px]  ">

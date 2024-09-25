@@ -45,11 +45,22 @@ app.get("/", (req, res) => {
 io.on("connection", (socket) => {
   console.log("a user connected", socket.id);
 
-  //listen to new comment
-  socket.on("sendComment", ({ appointmentId, message, sender }) => {
-    console.log("Sending message:", message, "from sender:", sender);
+  // Listen for joinAppointment event
+  socket.on("joinAppointment", ({ appointmentId }) => {
+    if (appointmentId) {
+      socket.join(appointmentId);
+      socket.emit("joinedAppointment", { socketId: socket.id });
+      console.log("User joined room:", appointmentId);
+    } else {
+      console.log("Invalid appointmentId");
+    }
+  });
 
+  // Listen for new comment
+  socket.on("sendComment", ({ message, sender }) => {
     socket.broadcast.emit("newComment", { message, sender });
+    console.log("Sending message:", message, "from sender:", sender);
+    console.log("Broadcasted newComment");
   });
 
   // when disconnect
