@@ -109,45 +109,31 @@ const appointmentSchema = new mongoose.Schema(
   { toJSON: { getters: true }, toObject: { getters: true } }
 );
 
-const chatHistorySchema = new mongoose.Schema({
-  appointmentId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Appointment",
-    required: true,
-  },
-  messages: [
-    {
-      sender: {
-        type: String,
-        enum: ["patient", "doctor"],
-        required: true,
-      },
-      content: {
-        type: String,
-        required: true,
-      },
-      timestamp: {
-        type: Date,
-        default: Date.now,
-      },
+const chatHistorySchema = new mongoose.Schema(
+  {
+    appointmentId: {
+      type: String,
+      required: true,
+      index: true, // For faster queries
     },
-  ],
-  doctorName: String,
-  patientName: String,
-});
-
-//pre-save middleware to populate doctor and patient names , show in chat history
-chatHistorySchema.pre("save", async function (next) {
-  if (this.isNew || this.isModified("appointmentId")) {
-    const appointment = await mongoose
-      .model("Appointment")
-      .findById(this.appointmentId);
-    if (appointment) {
-      this.doctorName = appointment.doctorName;
-      this.patientName = appointment.patientName;
-    }
-  }
-  next();
-});
+    messages: [
+      {
+        text: {
+          type: String,
+          required: true,
+        },
+        sender: {
+          type: String,
+          required: true,
+        },
+        timestamp: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
+  },
+  { timestamps: true }
+);
 
 export { doctorSchema, patientSchema, appointmentSchema, chatHistorySchema };

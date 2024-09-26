@@ -6,6 +6,7 @@ import { SendHorizonal } from "lucide-react";
 import { io } from "socket.io-client";
 import GreenDotAnimation from "@/app/_components/lotties/greenDot.js";
 import { useSession } from "next-auth/react";
+import axios from "axios";
 
 const page = () => {
   const [appointmentId, setAppointmentId] = useState("");
@@ -13,6 +14,8 @@ const page = () => {
   const [socketId, setSocketId] = useState();
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
+  const [isChatHistorySaved, setIsChatHistorySaved] = useState(false);
+  const [isChatHistoryError, setIsChatHistoryError] = useState(false);
 
   const [role, setRole] = useState(false);
 
@@ -154,9 +157,41 @@ const page = () => {
 
       return () => {
         socket.current.off("newComment", handleNewComment);
+        //save chat history
       };
     }
   }, [role, appointmentId, userId]);
+
+  async function saveChatHistory() {
+    console.log("is it receiving the messages array ", messages);
+
+    try {
+      const messageToSend = {
+        messages: messages.map((msg) => ({
+          messages: [
+            {
+              text: msg.text,
+              sender: msg.sender,
+            },
+          ],
+        })),
+      };
+
+      const response = await axios.post(
+        `http://localhost:5000/history/create/${appointmentId}`,
+        messageToSend
+      );
+
+      console.log("Chat history saved successfully");
+      setIsChatHistorySaved("Chat history saved successfully");
+      return response.data;
+    } catch (error) {
+      console.error("Error saving chat history:", error);
+      setIsChatHistoryError("Error saving chat history");
+      throw error;
+    }
+  }
+
   console.log("Messages:", messages);
 
   return (
@@ -175,10 +210,20 @@ const page = () => {
         )}
       </div>
 
-      <div className="appointment-info">
+      <div className="appointment-info ">
         <h4> Appointment reference: </h4>
-        <p> {appointmentId}</p>
+        <span> {appointmentId}</span>
+        <button
+          className="ml-3 hover:bg-orange-300/70 bg-orange-600"
+          onClick={saveChatHistory}
+        >
+          {" "}
+          Save chat history
+        </button>
       </div>
+
+      <p className="text-green-600 font-bold"> {isChatHistorySaved} </p>
+      <p className="text-red-600 font-bold"> {isChatHistoryError}</p>
       <div className="chatroom mx-auto w-full max-w-3xl">
         <div className="messages flex flex-col mt-3 px-auto  min-h-[300px]  ">
           {messages.map((msg, index) => {

@@ -7,6 +7,7 @@ import { patientRouter } from "./routes/patient.route.js";
 import { appointmentRouter } from "./routes/appointment.route.js";
 import { usersRouter } from "./routes/users.route.js";
 import { imageUploadRouter } from "./routes/imageUpload.route.js";
+import { chatHistoryRouter } from "./routes/chatHistory.route.js";
 import { Server } from "socket.io";
 
 import { createServer } from "node:http";
@@ -37,6 +38,7 @@ app.use("/doctors", doctorRouter);
 app.use("/patients", patientRouter);
 app.use("/appointments", appointmentRouter);
 app.use("/api", imageUploadRouter);
+app.use("/history", chatHistoryRouter);
 
 app.get("/", (req, res) => {
   res.send(`"Hello World" `);
