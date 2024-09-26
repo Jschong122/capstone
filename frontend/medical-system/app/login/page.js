@@ -20,6 +20,7 @@ export function LogIn() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -30,15 +31,17 @@ export function LogIn() {
         redirect: false,
       });
 
-      if (response.error) {
-        throw new Error(response.error);
+      if (response.status === 200) {
+        console.log("login successful");
+        router.push("/");
       }
-
-      console.log("login successful");
-      router.push("/");
+      if (response.status === 401) {
+        console.log("No user found");
+        setErrorMessage("No user found");
+      }
     } catch (error) {
-      console.error("login failed:", error);
-      alert("login failed. Please check your email and password.");
+      console.error("Request failed or there was another error:", error);
+      alert("error", error);
     }
   };
 
@@ -98,6 +101,7 @@ export function LogIn() {
             </Button>
           )}
         </CardFooter>
+        <p className="text-red-600"> {errorMessage} </p>
       </Card>
     </div>
   );

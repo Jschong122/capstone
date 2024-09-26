@@ -1,0 +1,45 @@
+.appointment-info {
+  color: black;
+  padding-left: 1.5rem;
+  font-size: 1rem;
+  font-weight: normal;
+
+  display: flex;
+  align-items: center;
+}
+
+.appointment-info p {
+  padding-left: 1rem;
+}
+
+.chatroom {
+  background-color: rgb(255, 255, 254);
+}
+
+.messages {
+  margin: 1rem;
+  padding: 0.5rem;
+}
+
+.messages p {
+  margin: 0.5rem;
+}
+
+.text-area-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin-top: 1.5rem;
+}
+
+.text-area {
+  height: 5rem;
+  width: 100%;
+
+  padding: 1.5rem;
+}
+
+.text-area:focus {
+  outline: none;
+}

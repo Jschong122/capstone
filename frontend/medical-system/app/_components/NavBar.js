@@ -9,6 +9,8 @@ const NavBar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { data: session } = useSession();
 
+  const userRole = session?.user?.role;
+
   useEffect(() => {
     if (session) {
       setIsLoggedIn(true);
@@ -42,7 +44,7 @@ const NavBar = () => {
           {isLoggedIn ? (
             <>
               <li className="text-white hover:text-gray-300">
-                <DropdownAvatar data={session} />
+                <DropdownAvatar data={session} role={userRole} />
               </li>
             </>
           ) : (

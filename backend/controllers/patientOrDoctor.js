@@ -45,7 +45,7 @@ const patientOrDoctorLogin = async (req, res, next) => {
 
     if (!patientExists && !doctorExists) {
       console.log("user not found");
-      return res.status(400).json({ message: "user not found" });
+      return res.status(401).send({ message: "user not found" });
     }
 
     if (patientExists || doctorExists) {

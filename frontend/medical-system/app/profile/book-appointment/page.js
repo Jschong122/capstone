@@ -14,11 +14,7 @@ const BookAppointment = () => {
     return <div>You are not authorized to access this page</div>;
   }
 
-  return (
-    <div className=" w-full h-full">
-      <Form session={session} />
-    </div>
-  );
+  return <Form session={session} />;
 };
 
 export default BookAppointment;

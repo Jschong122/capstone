@@ -10,23 +10,20 @@ export function DoctorSection() {
 
   if (session?.user?.role === "doctor") {
     return (
-      <div className="m-5 ">
-        <h1>Welcome to the doctor page</h1>
-        <div className="grid grid-cols-3 gap-4 mx-10">
-          <div className="flex items-center">
+      <div>
+        <h1>Welcome to the doctor panel</h1>
+        <div className="grid grid-cols-3 gap-2 m-10">
+          <div className="flex items-center ">
             <Check />
-            <h4>You can manage your appointments and patients here</h4>
+            <h4 className="ml-2">
+              You can manage your appointments and patients here
+            </h4>
           </div>
           <div className="flex items-center">
             <Check />
-            <h4>You can communicate with your patients here</h4>
-          </div>
-          <div className="flex items-center">
-            <Check />
-            <h4>go to</h4>{" "}
-            <a href="/doctor-panel" className="ml-2">
-              DoctorPanel
-            </a>
+            <h4 className="ml-2">
+              You can communicate with your patients here
+            </h4>
           </div>
         </div>
       </div>
