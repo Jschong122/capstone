@@ -22,16 +22,19 @@ router.get("/", async (req, res) => {
 });
 
 router.put("/:id", async (req, res) => {
-  const { id } = req.params;
-  const { name, email, password, role } = req.body;
-  const doctor = await DoctorModel.findByIdAndUpdate(id, {
-    name,
-    email,
-    password,
-    role,
-  });
-  res.json(doctor);
-  res.status(404).json({ message: "Doctor id not found" });
+  try {
+    const { id } = req.params;
+    const { name, email, password, role } = req.body;
+    const doctor = await DoctorModel.findByIdAndUpdate(id, {
+      name,
+      email,
+      password,
+      role,
+    });
+    res.json(doctor);
+  } catch (error) {
+    res.status(404).json({ message: "Doctor id not found" });
+  }
 });
 
 export { router as doctorRouter };
