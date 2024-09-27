@@ -26,10 +26,9 @@ const DoctorPanel = ({ doctorId }) => {
       console.log(error, "error when get appointments");
     }
   }
-  function completeFile() {
-    const referenceId = list[0]._id;
+  async function completeFile(referenceId) {
     try {
-      const response = axios.put(
+      const response = await axios.put(
         `http://localhost:5000/appointments/complete/${referenceId}`
       );
       if (response.status === 200) {
@@ -38,9 +37,10 @@ const DoctorPanel = ({ doctorId }) => {
         console.log("get appointments failed");
       }
     } catch (error) {
-      console.log(error, "error when get appointments");
+      console.log(error, "error when close appointments");
     }
   }
+
   return (
     <div>
       <h1> patients appointments</h1>
@@ -90,7 +90,10 @@ const DoctorPanel = ({ doctorId }) => {
                     <h3 className="mb-3"> Action panel</h3>
                     <div className=" my-0.5 md:flex">
                       <label className="ml-5">patient is good</label>
-                      <button className="btn" onClick={completeFile}>
+                      <button
+                        className="btn"
+                        onClick={() => completeFile(records._id)}
+                      >
                         close file
                       </button>
                     </div>
